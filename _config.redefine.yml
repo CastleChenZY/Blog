@@ -116,7 +116,7 @@ home_banner:
     light: /images/wallhaven-wqery6-light.webp # light mode
     dark: /images/wallhaven-wqery6-dark.webp # dark mode
   # Home banner title
-  title: Theme Redefine
+  title: CastleChen
   # Home banner subtitle
   subtitle:
     text: [] # subtitle text, array
@@ -189,21 +189,21 @@ navbar:
     Home: 
       path: / 
       icon: fa-regular fa-house # can be empty
-    # Archives: 
-    #   path: /archives 
-    #   icon: fa-regular fa-archive # can be empty
-    # Status: 
-    #   path: https://status.ohevan.com/
-    #   icon: fa-regular fa-chart-bar
-    # About: 
-    #   icon: fa-regular fa-user
-    #   submenus:
-    #     Me: /about
-    #     Github: https://github.com/EvanNotFound/hexo-theme-redefine
-    #     Blog: https://ohevan.com
-    #     Friends: /friends
-    # Links: 
-    #   icon: fa-regular fa-link
+    Archives: 
+      path: /archives 
+      icon: fa-regular fa-archive # can be empty
+    Status: 
+      path: https://status.ohevan.com/
+      icon: fa-regular fa-chart-bar
+    About: 
+      icon: fa-regular fa-user
+      submenus:
+        Me: /about
+        Github: https://github.com/CastleChenZY
+        Blog: https://castlezy.cn
+        Friends: /friends
+    Links: 
+      icon: fa-regular fa-link
     #   submenus:
     #     Link1: /link1
     #     Link2: /link2
@@ -244,7 +244,7 @@ home:
   # Article categories visibility
   categories:
     enable: true  # Whether to enable
-    limit: 3 # Max number of categories to display
+    limit: 5 # Max number of categories to display
   # Article tags visibility
   tags:
     enable: true  # Whether to enable
