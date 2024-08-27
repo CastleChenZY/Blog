@@ -192,9 +192,6 @@ navbar:
     Archives: 
       path: /archives 
       icon: fa-regular fa-archive # can be empty
-    Status: 
-      path: https://status.ohevan.com/
-      icon: fa-regular fa-chart-bar
     About: 
       icon: fa-regular fa-user
       submenus:
@@ -202,8 +199,6 @@ navbar:
         Github: https://github.com/CastleChenZY
         Blog: https://castlezy.cn
         Friends: /friends
-    Links: 
-      icon: fa-regular fa-link
     #   submenus:
     #     Link1: /link1
     #     Link2: /link2
