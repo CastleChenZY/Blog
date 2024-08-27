@@ -195,10 +195,8 @@ navbar:
     About: 
       icon: fa-regular fa-user
       submenus:
-        Me: /about
         Github: https://github.com/CastleChenZY
         Blog: https://castlezy.cn
-        Friends: /friends
     #   submenus:
     #     Link1: /link1
     #     Link2: /link2
