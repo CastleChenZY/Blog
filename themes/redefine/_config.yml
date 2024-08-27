@@ -235,9 +235,9 @@ home:
       # Tags: 
       #   path: /tags 
       #   icon: fa-regular fa-tags # can be empty
-      # Categories: 
-      #   path: /categories 
-      #   icon: fa-regular fa-folder # can be empty
+      Categories: 
+        path: /categories 
+        icon: fa-regular fa-folder # can be empty
       # ...... # you can add more
   # Article date format
   article_date_format: auto # auto, relative, YYYY-MM-DD, YYYY-MM-DD HH:mm:ss etc.
@@ -246,9 +246,9 @@ home:
     enable: true  # Whether to enable
     limit: 3 # Max number of categories to display
   # Article tags visibility
-  tags:
-    enable: true  # Whether to enable
-    limit: 3  # Max number of tags to display
+  # tags:
+  #   enable: true  # Whether to enable
+  #   limit: 3  # Max number of tags to display
 # HOME PAGE ARTICLE SETTINGS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 
@@ -323,7 +323,7 @@ articles:
 # Docs: https://redefine-docs.ohevan.com/posts/comment
 comment:
   # Whether to enable comment
-  enable: true
+  enable: false
   # Comment system
   system: waline # waline, gitalk, twikoo, giscus
   # System configuration
