@@ -1,7 +1,6 @@
 ---
 title: Essential C++
 categories:书籍阅读
-tags:c++
 ---
 # Essential C++
 
