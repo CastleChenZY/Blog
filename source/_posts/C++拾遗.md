@@ -1,3 +1,9 @@
+---
+title: C++拾遗
+categories: 杂谈
+tags: C++
+---
+
 # C++拾遗
 
 ## union与struct
