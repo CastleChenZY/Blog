@@ -5,13 +5,149 @@ tags: C++
 ---
 # 细谈const
 
-
-## 啥是const
-
 {% notel blue Definition%}
 
-有时候我们希望定义这样一种变量，它的值不能被改变。例如，用一个变量来表示缓冲区的大小。使用变量的好处是当我们觉得缓冲区大小不再合适时，很容易对其进行调整。另一方面，也应随时警惕防止程序一不小心改变了这个值。为了满足这一要求，可以用关键字**const**对变量的类型加以限定。
+​	有时候我们希望定义这样一种变量，它的值不能被改变。例如，用一个变量来表示缓冲区的大小。使用变量的好处是当我们觉得缓冲区大小不再合适时，很容易对其进行调整。另一方面，也应随时警惕防止程序一不小心改变了这个值。为了满足这一要求，可以用关键字**const**对变量的类型加以限定。
 
 ​																														——*C++ primer*
+
+{% endnotel %}
+
+​	const对象一旦创建后其值就不能再改变，所以const对象必须初始化。
+
+```c++
+const int i = 42;	// correct
+const int k;		// error k是一个未经初始化的常量
+```
+
+
+
+## const的使用与作用域
+
+```c++
+const int buffSize = 512;
+```
+
+编译器将在编译过程中把用到该变量的地方都替换成对应的值。也就是说，编译器会找到代码中所有用到`buffSize`的地方，然后用512替换。
+
+​	默认情况下，const对象被设定为仅在文件内有效。当多个文件中出现了同名的const变量时，其实等同于在不同文件中分别定义了独立的变量。
+
+​	若要在不同文件中使用同一个const对象，需要使用extern关键字：
+
+```c++
+//constTest.cc
+extern const int buffSize = 12;		// 声明并定义了变量buffSize
+
+//constMain.cc
+#include <iostream>
+using namespace std;
+extern const int buffSize;			// 该buffSize与constTest.cc中定义的buffSize是同一个
+int main() {
+  cout << buffSize << endl;  		// 12
+  return 0;
+}
+```
+
+
+
+## const的引用
+
+​	可以把引用绑定到const对象上，就像绑定到其他对象上一样，我们称之为**对常量的引用**。
+
+```c++
+(1) const int ci = 1024;
+(2) const int &r1 = ci;		//correct
+(3) r1 = 2048;				//error!
+(4) int &r2 = ci;			//error!
+```
+
+因为不允许直接为`ci`赋值，当然也就不能通过引用去改变`ci`、因此，对`r2`的初始化是错误的。假设该初始化是合法的，则可以通过`r2`来改变它所引用的对象的值，这显然是不正确的。
+
+​	了解了const的相关定义，很容易理解上述代码(1) - (3)。对于(4)也是可以理解的，但是这里隐含一个“权限放大”的概念，值得再细细探讨一番。
+
+### 关于权限
+
+​	权限可以分为权限放大和权限缩小。对于一个文件，如果它只有读的权限，现在给它加一个写权限，这就是**权限放大**。若它读写权限都有，但此刻限制了它的写权限，这就是**权限缩小**。
+​	在指针和引用赋值中，权限可以缩小，但不可以放大：这里通常指的是变量的值可不可以改的问题，如果说是从改到不能改，这就是将权限缩小了，这是可行的；如果说是从不能改到能改，这就是权限放大了，此时是不行的。
+
+```c++
+int a = 10;
+const int& ra = a;  // 加了const，不可修改ra所引用的对象(a)，权限缩小，可行
+int& raa = ra;  	// rra是ra的别名，然而ra是只读的，raa此时是可读可写的，这属于权限放大，不可行！
+					//error: binding reference of type ‘int&’ to ‘const int’ discards qualifiers
+
+const int b = 20;
+int& rb = b;  		// 同上，这里权限放大，不可行！
+const int& rrb = b;  // 这里rrb和b都是const int，此时权限平移，即权限不变，可行。
+
+```
+
+​	再进一步，类型转换中也可能存在权限放大问题。
+
+```c++
+double pi = 3.14;
+
+int pa = pi;		// correct，隐式类型转换
+int pb = (int)pi;	// correct，强制类型转换
+
+double& ra = pi;	// correct，ra是pi的别名，且类型都为double
+int& rb = pi;		// error(1)
+int& rd = (int)pi;	// error(2)
+const int& rc = pi;	// correct
+```
+
+​	在解释上面的error(1)、error(2)前，先引入一个关于类型转换的小知识点，**临时量对象(temporary)**。
+
+#### 	临时量对象
+
+​	所谓临时量对象就是当编译器需要一个空间来暂存表达式的求值结果时临时创建的一个未命名的对象。
+
+```c++
+double dval = 3.1415;
+const int& ri = dval;
+```
+
+此处`ri`引用了一个int型的数。对`ri`的操作应该是整数运算，但`dval`却是一个双精度浮点数而非整数。因此为了确保`ri`绑定一个整数，编译器把上述代码变成了如下形式：
+
+```c++
+const int temp = dval;	// 由双精度浮点数生成一个临时的整形常量
+const int& ri = temp;	// 让ri绑定这个变量
+```
+
+​	有了临时量对象的概念后，再来看看error(1)和error(2)。
+
+​	首先，对于error(1)，它实际的形式是：
+
+```c++
+const int temp_pi = pi;
+int& rb = temp_pi;		// error(1)
+```
+
+这显然是属于权限放大，因此不可行！同理，error(2)也是一个权限放大问题，它的实际形式和error(1)一样。
+
+除了类型转换会有临时量，函数调用也有相关问题。
+
+```c++
+void myFunc1(int& num) {
+    cout << num << endl;
+}
+void myFunc2(const int& num) {
+    cout << num << endl;
+}
+int main() {
+    double b = 1.23;
+    myFunc1(b);		//error!,这里会产生临时量 double -> const int, 函数形参类型为int, 接收一个const int 属于权限放大
+    myFunc2(b);		//correct, 这里会产生临时量 double -> const int, 函数形参类型为const int，属于权限平移，可行
+}
+```
+
+再复杂一点，在类中也存在很多权限放大问题！
+
+{% notel green const 修饰 成员函数的规则%}
+
+1. const对象不可以调用非const成员函数，这属于权限放大
+2. 非const对象可以调用const成员函数，这属于权限缩小
+3. const成员函数内不可以调用其它的非const成员函数，这属于权限放大
+4. 非const成员函数内可以调用其它的const成员函数，这属于权限缩小
 
 {% endnotel %}
