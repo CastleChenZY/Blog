@@ -141,6 +141,8 @@ int main() {
 }
 ```
 
+#### 类与对象的权限放大
+
 再复杂一点，在类中也存在很多权限放大问题！
 
 {% notel green const 修饰 成员函数的规则%}
@@ -151,3 +153,45 @@ int main() {
 4. 非const成员函数内可以调用其它的const成员函数，这属于权限缩小
 
 {% endnotel %}
+
+```c++
+class Cat {
+public:
+    Cat() {
+        cout << "This cat build from Cat()" << endl;
+    }
+    Cat(Cat& c) {	// 注意这个参数类型
+        cout << "This cat build from Cat(cat& c)" << endl;
+    }
+    ~Cat() {
+        cout << "kill cat!!!" << endl;
+    }
+    void introduce1() {
+        cout << "cat introduce1" << endl;
+        introduce2();	// correct, 非const成员函数可以调用其它const成员函数。
+    }
+    void introduce2() const {
+        cout << "cat introduce2" << endl;
+        introduce1();	// error,const成员函数不可以调用其它非const成员函数！
+    }
+};
+
+int main() {
+    
+    Cat& boy_cat = Cat();	// error，这个error似乎令你超乎想象
+         					// error: cannot bind non-const lvalue reference of type ‘Cat&’ to an rvalue of type ‘Cat’
+    const Cat& girl_cat = Cat();
+    
+    girl_cat.introduce1();	// const对象调用非const成员函数，权限放大 error
+    						// error: passing ‘const Cat’ as ‘this’ argument discards qualifiers [-fpermissive]
+    girl_cat.introduce2();	// const对象调用const成员函数，权限平移，可行
+}
+```
+
+​	对于`Cat& boy_cat = Cat();`。`Cat()`产生的匿名对象是一个临时对象。C++标准不允许将非`const`引用绑定到临时对象上。这是因为临时对象可能会在引用的生命周期结束之前被销毁，从而导致引用悬垂（dangling reference），即引用指向了一个已经被销毁的对象。
+
+​	再来看`const Cat& girl_cat = Cat();`。在这个例子中，`girl_cat` 是一个对临时 `Cat` 对象的 `const` 引用。由于它是 `const` 的，所以你不能通过这个引用来修改对象的状态，这避免了潜在的悬垂引用问题，因为即使临时对象被销毁了，你也无法通过这个引用来修改它。然而，你仍然可以通过这个引用来读取对象的状态，直到临时对象的生命周期结束。
+
+{% note primary  %}匿名对象的生命周期只在那一行，那么之后`girl_cat`是否会变成野引用呢？即引用了一块已经不存在的空间？ {% endnote %}
+
+​	其实当用const来引用一个匿名对象，匿名对象的声明周期会被延长，在本例中，这个匿名对象会随着程序结束才进行销毁。
