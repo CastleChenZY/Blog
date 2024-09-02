@@ -1251,7 +1251,7 @@ int count_less_than(const vector<int> &vec, int comp)
 }
 
 //通常我们把function object当作参数传给泛型算法：
-void print_less_than( const vector<int> &vec, int comp. ostream &os = cout)
+void print_less_than( const vector<int> &vec, int comp, ostream &os = cout)
 {
     LessThan lt(comp);
     vector<int>::const_iterator iter = vec.begin();
